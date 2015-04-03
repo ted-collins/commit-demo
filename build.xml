@@ -1,0 +1,26 @@
+<project>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src/com/happytrout/commit/main" destdir="build/classes"/>
+    </target>
+
+    <target name="jar">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/commit.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="com.happytrout.commit.main.WriterCmd"/>
+            </manifest>
+        </jar>
+		<copy file="build/jar/commit.jar" todir="../commit-demo/public/jar" overwrite="true"/>
+    </target>
+
+    <target name="run">
+        <java jar="build/jar/commit.jar" fork="true"/>
+    </target>
+
+</project>
