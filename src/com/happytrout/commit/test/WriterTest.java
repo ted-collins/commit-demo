@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
+import org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 
 import com.happytrout.commit.main.Writer;
@@ -80,5 +82,20 @@ public class WriterTest {
 		w.commit(msg_1);
 		File fh1 = new File("deleteme");
 		assertEquals("Messages were not written to log file", msg_0.length() + msg_1.length() + 46, fh1.length());
+	}
+	
+	@Test
+	public final void whenSpecialCharactersArePassedInTheyAreHandled() {
+		Writer w = new Writer("deleteme");
+		String msg_0 = "two paths \r\ndiverged\r\nin the woods";
+		w.setCid("a");
+		String ret = w.formatLine(msg_0);
+		assertThat("Did not replace carriage returns in message",
+				ret, CoreMatchers.not(CoreMatchers.containsString("\r")));
+		assertThat("Did not replace newlines returns in message",
+				ret, CoreMatchers.not(CoreMatchers.containsString("\n")));
+		assertThat("Did not replace newlines and carriage returns in message with correct substitutions",
+				ret, CoreMatchers.containsString("<cr>"));
+
 	}
 }

@@ -48,7 +48,7 @@ public class Writer {
 	// logfile, even if created by proxy (e.g. www-data)
 	public Writer(final String fname) throws RuntimeException {
 		
-		if(fname.length() < 1) {
+		if(fname == null || fname.length() < 1) {
 			throw new RuntimeException("File name cannot be null.");
 		}
 		
@@ -92,7 +92,7 @@ public class Writer {
 * @return      void
 */
 	public void setCid(final String cid) {
-		if(cid.length() < 1) {
+		if(cid == null || cid.length() < 1) {
 			throw new RuntimeException("CID cannot be null.");
 		}		
 		this.cid = cid;
@@ -114,10 +114,10 @@ public class Writer {
 * @return      void
 */
 	public final void commit(final String msg) {
-		if(msg.length() < 1) {
+		if(msg == null || msg.length() < 1) {
 			throw new RuntimeException("Cannot commit null string.");
 		}
-		if(cid.length() < 1) {
+		if(cid == null || cid.length() < 1) {
 			throw new RuntimeException("Must set CID before logging entries.");
 		}
 		try {
@@ -150,13 +150,18 @@ public class Writer {
 	public String formatLine(final String msg) {
 		final String delimiter = ":";
 		
-		if(cid.length() < 1) {
+		if(msg == null || msg.length() < 1) {
+			throw new RuntimeException("Message cannot be null.");
+		}
+		if(cid == null || cid.length() < 1) {
 			throw new RuntimeException("CID cannot be null.");
 		}
 		String stamp = Objects.toString(System.currentTimeMillis(), null);
 		SecureRandom random = new SecureRandom();
 		String rand = new BigInteger(130, random).toString(32).substring(0, 4);
-		String ret = this.cid + delimiter + stamp + "-" + rand + delimiter + msg;
+		String msg_fmt_0 = msg.replaceAll("\r", "<cr>");
+		String msg_fmt_1 = msg_fmt_0.replaceAll("\n", "<lf>");
+		String ret = this.cid + delimiter + stamp + "-" + rand + delimiter + msg_fmt_1;
 		
 		return ret;
 	}

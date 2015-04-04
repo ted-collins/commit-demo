@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -85,6 +86,17 @@ public class ReaderTest {
 		String sample = "A344:Hello World\r\n";
 		Reader r = new Reader(fname, "A");
 		assertNull("Formatter did not recognize malformed line", r.parseLine(sample));
+	}
+	
+	@Test
+	public final void whenMessageContainsSpecialCharactersReaderDoesNotBarf() {
+		String fname = "deleteme";
+		String sample = "A:344:Hello World:This:Has:Additional delimiters:\r\n";
+		Reader r = new Reader(fname, "A");
+		assertThat("Formatter did not correctly handle message containing delimiters",
+				r.parseLine(sample), CoreMatchers.containsString("delimiters:"));
+		assertEquals("Formatter did not correctly handle all the delimiters in a message",
+				6, StringUtils.countMatches(r.parseLine(sample), ":"));
 	}
 	
 	@Test
